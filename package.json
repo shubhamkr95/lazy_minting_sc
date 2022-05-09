@@ -1,0 +1,19 @@
+{
+  "name": "lazymint_sc",
+  "version": "1.0.0",
+  "description": "Lazy minting smart contract using hardhat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shubhamkr95/lazy_minting_sc.git"
+  },
+  "author": "Shubham",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shubhamkr95/lazy_minting_sc/issues"
+  },
+  "homepage": "https://github.com/shubhamkr95/lazy_minting_sc#readme"
+}
