@@ -83,4 +83,21 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
         pendingWithdrawals[receiver] = 0;
         receiver.transfer(amount);
     }
+
+     /// @notice Retuns the amount of Ether available to the caller to withdraw.
+    function availableToWithdraw() public view returns (uint256) {
+        return pendingWithdrawals[msg.sender];
+    }
+
+    /// @notice Verifies the signature for a given voucher data, returning the address of the signer.
+    /// @dev Will revert if the signature is invalid. Does not verify that the signer is authorized to mint NFTs.
+    function _verify(
+        uint256 tokenId,
+        uint256 minPrice,
+        string memory uri,
+        bytes memory signature
+    ) public view returns (address) {
+        bytes32 digest = _hash(tokenId, minPrice, uri);
+        return ECDSA.recover(digest, signature);
+    }
 }
