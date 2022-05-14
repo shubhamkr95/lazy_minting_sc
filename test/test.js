@@ -139,4 +139,40 @@ describe("LazyNFT", function () {
    })
   ).to.be.revertedWith("Insufficient funds to redeem");
  });
+
+ it("Should make payments available to minter for withdrawal", async function () {
+  const { contract, redeemer, minter } = await deploy();
+
+  const lazyMinter = new LazyMinter({ contract, signer: minter });
+  const amount = ethers.constants.WeiPerEther; // charge 1 Eth
+  const voucher = await lazyMinter.createVoucher(
+   1,
+   "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+   amount
+  );
+
+  const tokenId = voucher.tokenId;
+  const minPrice = voucher.minPrice;
+  const uri = voucher.uri;
+  const signature = voucher.signature;
+
+  // the payment should be sent from the redeemer's account to the contract address
+  await expect(
+   await contract.redeem(redeemer.address, tokenId, minPrice, uri, signature, {
+    value: amount,
+   })
+  ).to.changeEtherBalances([redeemer, contract], [minPrice - amount, minPrice]);
+
+  // minter should have funds available to withdraw
+  expect(await contract.availableToWithdraw()).to.equal(minPrice);
+
+  // withdrawal should increase minter's balance
+  await expect(await contract.withdraw()).to.changeEtherBalance(
+   minter,
+   minPrice
+  );
+
+  // minter should now have zero available
+  expect(await contract.availableToWithdraw()).to.equal(0);
+ });
 });
