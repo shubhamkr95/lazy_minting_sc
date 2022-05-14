@@ -15,3 +15,14 @@ async function deploy() {
   contract,
  };
 }
+
+describe("LazyNFT", function () {
+ it("Should deploy", async function () {
+  const signers = await ethers.getSigners();
+  const minter = signers.address;
+
+  const LazyNFT = await ethers.getContractFactory("LazyNFT");
+  const lazynft = await LazyNFT.deploy();
+  await lazynft.deployed();
+ });
+});
