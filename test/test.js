@@ -84,4 +84,35 @@ describe("LazyNFT", function () {
    contract.redeem(redeemer.address, tokenId, minPrice, uri, signature)
   ).to.be.revertedWith("ERC721: token already minted");
  });
+
+ it("Should redeem if payment is >= minPrice", async function () {
+  const { contract, redeemer, minter } = await deploy();
+
+  const lazyMinter = new LazyMinter({ contract, signer: minter });
+  const amount = ethers.constants.WeiPerEther; // charge 1 Eth
+  const voucher = await lazyMinter.createVoucher(
+   1,
+   "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi",
+   amount
+  );
+
+  const tokenId = voucher.tokenId;
+  const minPrice = voucher.minPrice;
+  const uri = voucher.uri;
+  const signature = voucher.signature;
+
+  await expect(
+   contract.redeem(redeemer.address, tokenId, minPrice, uri, signature, {
+    value: amount,
+   })
+  )
+   .to.emit(contract, "Transfer") // transfer from null address to minter
+   .withArgs(
+    "0x0000000000000000000000000000000000000000",
+    minter.address,
+    tokenId
+   )
+   .and.to.emit(contract, "Transfer") // transfer from minter to redeemer
+   .withArgs(minter.address, redeemer.address, tokenId);
+ });
 });
