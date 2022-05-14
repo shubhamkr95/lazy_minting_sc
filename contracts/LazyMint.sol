@@ -13,4 +13,20 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
     string private constant SIGNATURE_VERSION = "1";
 
     mapping(address => uint256) public pendingWithdrawals;
+
+    address private signer;
+
+    constructor()
+        ERC721("LazyMINT", "LAZY")
+        EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION)
+    {}
+
+    function setMinter(address _signer) internal {
+        signer = _signer;
+        _setupRole(MINTER_ROLE, signer);
+    }
+
+    function getMinter() public view returns (address) {
+        return signer;
+    }
 }
