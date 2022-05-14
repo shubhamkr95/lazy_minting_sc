@@ -25,4 +25,32 @@ describe("LazyNFT", function () {
   const lazynft = await LazyNFT.deploy();
   await lazynft.deployed();
  });
+
+ it("Should redeem an NFT from a signed voucher", async function () {
+  const { contract, redeemer, minter } = await deploy();
+
+  const lazyMinter = new LazyMinter({ contract, signer: minter });
+  // console.log(lazyMinter);
+  const voucher = await lazyMinter.createVoucher(
+   1,
+   "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"
+  );
+
+  const tokenId = voucher.tokenId;
+  const minPrice = voucher.minPrice;
+  const uri = voucher.uri;
+  const signature = voucher.signature;
+
+  await expect(
+   contract.redeem(redeemer.address, tokenId, minPrice, uri, signature)
+  )
+   .to.emit(contract, "Transfer") // transfer from null address to minter
+   .withArgs(
+    "0x0000000000000000000000000000000000000000",
+    minter.address,
+    voucher.tokenId
+   )
+   .and.to.emit(contract, "Transfer") // transfer from minter to redeemer
+   .withArgs(minter.address, redeemer.address, voucher.tokenId);
+ });
 });
