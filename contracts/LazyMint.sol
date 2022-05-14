@@ -64,83 +64,78 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
  }
 
  /// @notice Transfers all pending withdrawal balance to the caller. Reverts if the caller is not an authorized minter.
-    function withdraw() public {
-        require(
-            hasRole(MINTER_ROLE, msg.sender),
-            "Only authorized minters can withdraw"
-        );
-        // IMPORTANT: casting msg.sender to a payable address is only safe
-        // if ALL members of the minter role are payable addresses.
-        address payable receiver = payable(msg.sender);
-        // check if there any balance to be withdrawn
-        require(
-            pendingWithdrawals[receiver] != 0,
-            "No amount left to be withdrawn"
-        );
+ function withdraw() public {
+  require(
+   hasRole(MINTER_ROLE, msg.sender),
+   "Only authorized minters can withdraw"
+  );
+  // IMPORTANT: casting msg.sender to a payable address is only safe
+  // if ALL members of the minter role are payable addresses.
+  address payable receiver = payable(msg.sender);
+  // check if there any balance to be withdrawn
+  require(pendingWithdrawals[receiver] != 0, "No amount left to be withdrawn");
 
-        uint256 amount = pendingWithdrawals[receiver];
-        // zero account before transfer to prevent re-entrancy attack
-        pendingWithdrawals[receiver] = 0;
-        receiver.transfer(amount);
-    }
+  uint256 amount = pendingWithdrawals[receiver];
+  // zero account before transfer to prevent re-entrancy attack
+  pendingWithdrawals[receiver] = 0;
+  receiver.transfer(amount);
+ }
 
-     /// @notice Retuns the amount of Ether available to the caller to withdraw.
-    function availableToWithdraw() public view returns (uint256) {
-        return pendingWithdrawals[msg.sender];
-    }
+ /// @notice Retuns the amount of Ether available to the caller to withdraw.
+ function availableToWithdraw() public view returns (uint256) {
+  return pendingWithdrawals[msg.sender];
+ }
 
-    /// @notice Verifies the signature for a given voucher data, returning the address of the signer.
-    /// @dev Will revert if the signature is invalid. Does not verify that the signer is authorized to mint NFTs.
-    function _verify(
-        uint256 tokenId,
-        uint256 minPrice,
-        string memory uri,
-        bytes memory signature
-    ) public view returns (address) {
-        bytes32 digest = _hash(tokenId, minPrice, uri);
-        return ECDSA.recover(digest, signature);
-    }
+ /// @notice Verifies the signature for a given voucher data, returning the address of the signer.
+ /// @dev Will revert if the signature is invalid. Does not verify that the signer is authorized to mint NFTs.
+ function _verify(
+  uint256 tokenId,
+  uint256 minPrice,
+  string memory uri,
+  bytes memory signature
+ ) public view returns (address) {
+  bytes32 digest = _hash(tokenId, minPrice, uri);
+  return ECDSA.recover(digest, signature);
+ }
 
-      /// @notice Returns a hash of the given data, prepared using EIP712 typed data hashing rules.
-    /// @param  tokenId for id of token
-    ///@param minPrice price of nft
-    ///@param uri metadata of the token
-    function _hash(
-        uint256 tokenId,
-        uint256 minPrice,
-        string memory uri
-    ) internal view returns (bytes32) {
-        return
-            _hashTypedDataV4(
-                keccak256(
-                    abi.encode(
-                        keccak256(
-                            "NFTVoucher(uint256 tokenId,uint256 minPrice,string uri)"
-                        ),
-                        tokenId,
-                        minPrice,
-                        keccak256(bytes(uri))
-                    )
-                )
-            );
-    }
+ /// @notice Returns a hash of the given data, prepared using EIP712 typed data hashing rules.
+ /// @param  tokenId for id of token
+ ///@param minPrice price of nft
+ ///@param uri metadata of the token
+ function _hash(
+  uint256 tokenId,
+  uint256 minPrice,
+  string memory uri
+ ) internal view returns (bytes32) {
+  return
+   _hashTypedDataV4(
+    keccak256(
+     abi.encode(
+      keccak256("NFTVoucher(uint256 tokenId,uint256 minPrice,string uri)"),
+      tokenId,
+      minPrice,
+      keccak256(bytes(uri))
+     )
+    )
+   );
+ }
 
-    /// @notice Returns the chain id of the current blockchain.
-    function getChainID() external view returns (uint256) {
-        uint256 id;
-        assembly {
-            id := chainid()
-        }
-        return id;
-    }
+ /// @notice Returns the chain id of the current blockchain.
+ function getChainID() external view returns (uint256) {
+  uint256 id;
+  assembly {
+   id := chainid()
+  }
+  return id;
+ }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(AccessControl, ERC721)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
-    }
+ function supportsInterface(bytes4 interfaceId)
+  public
+  view
+  virtual
+  override(AccessControl, ERC721)
+  returns (bool)
+ {
+  return super.supportsInterface(interfaceId);
+ }
 }
