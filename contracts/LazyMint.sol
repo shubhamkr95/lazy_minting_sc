@@ -100,7 +100,7 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
         bytes32 digest = _hash(tokenId, minPrice, uri);
         return ECDSA.recover(digest, signature);
     }
-    
+
       /// @notice Returns a hash of the given data, prepared using EIP712 typed data hashing rules.
     /// @param  tokenId for id of token
     ///@param minPrice price of nft
@@ -123,5 +123,24 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
                     )
                 )
             );
+    }
+
+    /// @notice Returns the chain id of the current blockchain.
+    function getChainID() external view returns (uint256) {
+        uint256 id;
+        assembly {
+            id := chainid()
+        }
+        return id;
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(AccessControl, ERC721)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 }
