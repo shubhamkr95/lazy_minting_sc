@@ -5,15 +5,15 @@ require("solidity-coverage");
  * @type import('hardhat/config').HardhatUserConfig
  */
 
-const ALCHEMY_API_KEY = process.env.API_KEY;
-const RINKEBY_PRIVATE_KEY = process.env.RINKEBY_PRIVATE_KEY;
+const API_KEY = process.env.API_KEY;
+const PRIVATE_KEY = process.env.RINKEBY_PRIVATE_KEY;
 
 module.exports = {
  solidity: "0.8.4",
  networks: {
   rinkeby: {
-   url: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
-   accounts: [`${RINKEBY_PRIVATE_KEY}`],
+   url: `https://eth-rinkeby.alchemyapi.io/v2/${API_KEY}`,
+   accounts: [`${PRIVATE_KEY}`],
   },
  },
  plugins: ["solidity-coverage"],
