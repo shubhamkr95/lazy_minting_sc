@@ -29,4 +29,40 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
     function getMinter() public view returns (address) {
         return signer;
     }
+
+    /// @notice Redeems an Voucher for an actual NFT, creating it in the process.
+    /// @param redeemer The address of the account which will receive the NFT upon success.
+    function redeem(
+        address redeemer,
+        uint256 tokenId,
+        uint256 minPrice,
+        string memory uri,
+        bytes memory signature
+    ) public payable returns (uint256) {
+        // make sure signature is valid and get the address of the signer
+        signer = _verify(tokenId, minPrice, uri, signature);
+
+        // set the minter address in _setupRole
+        setMinter(signer);
+
+        // make sure that the signer is authorized to mint NFTs
+        require(
+            hasRole(MINTER_ROLE, signer),
+            "Signature invalid or unauthorized"
+        );
+
+        // make sure that the redeemer is paying enough to cover the buyer's cost
+        require(msg.value >= minPrice, "Insufficient funds to redeem");
+
+        // first assign the token to the signer, to establish provenance on-chain
+        _mint(signer, tokenId);
+        _setTokenURI(tokenId, uri);
+
+        _transfer(signer, redeemer, tokenId);
+
+        // record payment to signer's withdrawal balance
+        pendingWithdrawals[signer] += msg.value;
+
+        return tokenId;
+    }
 }
