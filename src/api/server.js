@@ -6,12 +6,13 @@ const { AppError } = require("./helpers/responseHandler.js");
 const { dbConnect } = require("./connections/database.js");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const cool = require("cool-ascii-faces");
 
 const app = express();
 app.use(express.json());
-
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.get("/cool", (req, res) => res.send(cool()));
 app.use(bodyParser.json());
 
 const nftRoutes = require("./routes/getNft.js");
