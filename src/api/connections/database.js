@@ -3,10 +3,9 @@ require("dotenv").config({ path: "./../../../.env" });
 const mongoose = require("mongoose");
 const { logger } = require("../config/logger.js");
 
-const DB = process.env.DB_URL.replace(
- "<PASSWORD>",
- process.env.DATABASE_PASSWORD
-);
+logger.info(process.env.DB_URL);
+
+const DB = process.env.DB_URL;
 
 const dbConnect = mongoose
  .connect(DB)
