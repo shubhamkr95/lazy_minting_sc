@@ -14,7 +14,11 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const port = process.env.port || 6000;
+const nftRoutes = require("./routes/getNft.js");
+
+app.use("/lazyApi/", nftRoutes);
+
+const port = process.env.port || 3000;
 app.listen(port, () => {
  logger.info(`Connected to port ${port}`);
 });
