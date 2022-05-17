@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
+const dotenv = require("dotenv");
 dotenv.config();
 
-import mongoose from "mongoose";
-import logger from "../config/logger.js";
+const mongoose = require("mongoose");
+const { logger } = require("../config/logger.js");
 
 const DB = process.env.DB_URL.replace(
  "<PASSWORD>",
