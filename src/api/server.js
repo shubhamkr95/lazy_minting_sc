@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 
 const nftRoutes = require("./routes/getNft.js");
 
-app.use("/", nftRoutes);
+app.use("/lazyApi", nftRoutes);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
