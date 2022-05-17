@@ -6,7 +6,8 @@
   "scripts": {
     "solhint": "./node_modules/.bin/solhint -f table contracts/**/*.sol",
     "prettier:solidity": "./node_modules/.bin/prettier --write contracts/**/*.sol",
-    "start": "nodemon ./src/api/server.js" 
+    "start:dev": "nodemon ./src/api/server.js",
+    "start": "node ./src/api/server.js"
   },
   "repository": {
     "type": "git",
