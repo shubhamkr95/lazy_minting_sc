@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Lazy minting smart contract using hardhat",
   "main": "server.js",
-   "type": "module",
   "scripts": {
     "solhint": "./node_modules/.bin/solhint -f table contracts/**/*.sol",
     "prettier:solidity": "./node_modules/.bin/prettier --write contracts/**/*.sol"
