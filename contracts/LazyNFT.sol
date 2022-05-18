@@ -12,8 +12,6 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
  string private constant SIGNING_DOMAIN = "LazyNFT-Voucher";
  string private constant SIGNATURE_VERSION = "1";
 
- mapping(address => uint256) public pendingWithdrawals;
-
  address private signer;
 
  constructor()
@@ -57,8 +55,9 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
 
   _transfer(signer, redeemer, tokenId);
 
-  // record payment to signer's withdrawal balance
-  payable(signer).transfer(msg.value);
+  // send amount to the signer
+  (bool sent, ) = payable(signer).call{value: msg.value}("");
+  require(sent, "Failed to send Ether");
  }
 
  /// @notice Verifies the signature for a given voucher data, returning the address of the signer.
