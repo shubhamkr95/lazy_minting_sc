@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
  bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -14,10 +15,17 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
 
  address private signer;
 
- constructor()
+  
+  //creating erc20 variable  
+  IERC20 private token;
+
+ constructor(address _token)
   ERC721("LazyMINT", "LAZY")
   EIP712(SIGNING_DOMAIN, SIGNATURE_VERSION)
- {}
+ {
+  token = IERC20(_token);
+ }
+
 
  function setMinter(address _signer) internal {
   signer = _signer;
@@ -36,7 +44,7 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
   uint256 minPrice,
   string memory uri,
   bytes memory signature
- ) public payable  {
+ ) public  {
   // make sure signature is valid and get the address of the signer
   signer = _verify(tokenId, minPrice, uri, signature);
 
@@ -47,17 +55,20 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
   require(hasRole(MINTER_ROLE, signer), "Signature invalid or unauthorized");
 
   // make sure that the redeemer is paying enough to cover the buyer's cost
-  require(msg.value >= minPrice, "Insufficient funds to redeem");
 
   // first assign the token to the signer, to establish provenance on-chain
   _mint(signer, tokenId);
   _setTokenURI(tokenId, uri);
 
-  _transfer(signer, redeemer, tokenId);
+    // nft transfer
+    _transfer(signer, redeemer, tokenId);
+
+   // send erc20 tokens to the signer from the lazy minting contract
+    token.transferFrom(redeemer, signer, 20);
 
   // send amount to the signer
-  (bool sent, ) = payable(signer).call{value: msg.value}("");
-  require(sent, "Failed to send Ether");
+  // (bool sent, ) = payable(signer).call{value: msg.value}("");
+  // require(sent, "Failed to send Ether");
  }
 
  /// @notice Verifies the signature for a given voucher data, returning the address of the signer.
