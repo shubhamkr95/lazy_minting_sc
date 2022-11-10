@@ -15,9 +15,8 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
 
  address private signer;
 
-  
-  //creating erc20 variable  
-  IERC20 private token;
+ //creating erc20 variable
+ IERC20 private token;
 
  constructor(address _token)
   ERC721("LazyMINT", "LAZY")
@@ -25,7 +24,6 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
  {
   token = IERC20(_token);
  }
-
 
  function setMinter(address _signer) internal {
   signer = _signer;
@@ -44,7 +42,7 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
   uint256 minPrice,
   string memory uri,
   bytes memory signature
- ) public  {
+ ) public {
   // make sure signature is valid and get the address of the signer
   signer = _verify(tokenId, minPrice, uri, signature);
 
@@ -60,11 +58,11 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
   _mint(signer, tokenId);
   _setTokenURI(tokenId, uri);
 
-    // nft transfer
-    _transfer(signer, redeemer, tokenId);
+  // nft transfer
+  _transfer(signer, redeemer, tokenId);
 
-   // send erc20 tokens to the signer from the lazy minting contract
-    token.transferFrom(redeemer, signer, minPrice);
+  // send erc20 tokens to the signer from the lazy minting contract
+  token.transferFrom(redeemer, signer, minPrice);
 
   // send amount to the signer
   // (bool sent, ) = payable(signer).call{value: msg.value}("");

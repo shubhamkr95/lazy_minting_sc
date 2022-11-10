@@ -50,7 +50,3 @@ const domain = await this._signingDomain();
 ```
 npm run prettier:solidity
 ```
-
-## Deployed address: Rinkeby
-
-Contract address: [0x1109773fF2BC6F8075fbbB78970E6a6BcaFd2E86](https://rinkeby.etherscan.io/address/0x1109773fF2BC6F8075fbbB78970E6a6BcaFd2E86)
