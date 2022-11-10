@@ -39,10 +39,10 @@ describe("LazyNFT", function () {
   const { contract, redeemer, minter, token } = await deploy();
 
   // Mint 60 token to redeemer address
-  await token.connect(redeemer).mint(redeemer.address, 60);
+  await token.connect(redeemer).mint(redeemer.address, 1000);
 
   // Approve lazyMint contract to spend behalf of the owner
-  await token.connect(redeemer).approve(contract.address, 60);
+  await token.connect(redeemer).approve(contract.address, 1000);
 
   const approvedAmount = await token.allowance(
    redeemer.address,
@@ -61,7 +61,7 @@ describe("LazyNFT", function () {
   const voucher = await lazyMinter.createVoucher(
    1,
    "https://i.imgur.com/1OIzgw5.jpeg",
-   20
+   400
   );
 
   const tokenId = voucher.tokenId;

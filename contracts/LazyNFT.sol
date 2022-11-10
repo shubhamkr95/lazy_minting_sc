@@ -64,7 +64,7 @@ contract LazyNFT is ERC721URIStorage, EIP712, AccessControl {
     _transfer(signer, redeemer, tokenId);
 
    // send erc20 tokens to the signer from the lazy minting contract
-    token.transferFrom(redeemer, signer, 20);
+    token.transferFrom(redeemer, signer, minPrice);
 
   // send amount to the signer
   // (bool sent, ) = payable(signer).call{value: msg.value}("");
